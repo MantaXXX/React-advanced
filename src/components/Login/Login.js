@@ -13,6 +13,10 @@ const Login = (props) => {
 
   /**
    * useEffect 第二變數放入偵測值，當變數有變動時執行 function，藉此簡化相關 code
+   * @不需要放入的變數
+   * @params  state updating function: setFormIsValid...
+   * @params built-in APIs or function: fetch(), localStorage...
+   * @params variable/functions outside of components
    */
   useEffect(() => {
     setFormIsValid(
