@@ -17,11 +17,19 @@ const Login = (props) => {
    * @params  state updating function: setFormIsValid...
    * @params built-in APIs or function: fetch(), localStorage...
    * @params variable/functions outside of components
+   *
+   * @清除函式
+   * @return ()=>{} 除了第一次 useEffect 執行以外，之後每次 useEffect 執行前，會先 return ()=>{} 函式
+   * 可以避免 useEffect 重複呼叫 API...等等
    */
   useEffect(() => {
-    setFormIsValid(
-      enteredEmail.includes('@') && enteredPassword.trim().length > 6
-    );
+    const identifier = setTimeout(() => {
+      setFormIsValid(
+        enteredEmail.includes('@') && enteredPassword.trim().length > 6
+      );
+    }, 500)
+
+    return () => { clearTimeout(identifier) }
 
   }, [enteredEmail, enteredPassword])
 
