@@ -5,10 +5,8 @@ import classes from './Login.module.css';
 import Button from '../UI/Button/Button';
 
 /**
- *
  * @param preState 先前的 snapShot
  * @param action   由 dispatchEmail 傳進來的參數
- *
  */
 const emailReducer = (preState, action) => {
   if (action.type === 'USER_INPUT') {
@@ -19,12 +17,29 @@ const emailReducer = (preState, action) => {
   }
   return { value: '', isValid: false }
 }
+const passwordReducer = (preState, action) => {
+  if (action.type === 'USER_PASSWORD') {
+    return {
+      value: action.value,
+      isValid: action.value.trim().length > 6
+    }
+  }
+  if (action.type === 'USER_CLEAR') {
+    return {
+      value: preState.value,
+      isValid: preState.value?.trim().length > 6
+    }
+  }
+  return { value: '', isValid: false }
+}
+
+
 
 const Login = (props) => {
   // const [enteredEmail, setEnteredEmail] = useState('');
   // const [emailIsValid, setEmailIsValid] = useState();
-  const [enteredPassword, setEnteredPassword] = useState('');
-  const [passwordIsValid, setPasswordIsValid] = useState();
+  // const [enteredPassword, setEnteredPassword] = useState('');
+  // const [passwordIsValid, setPasswordIsValid] = useState();
   const [formIsValid, setFormIsValid] = useState(false);
   /**
    * 使用 useReducer 來整合 enterEmail, emailIsValid 兩個 state
@@ -37,28 +52,33 @@ const Login = (props) => {
     value: '',
     isValid: false
   })
+  const [passwordState, dispatchPassword] = useReducer(passwordReducer, {
+    value: '',
+    isValid: false
+  })
 
-  // /**
-  //  * useEffect 第二變數放入偵測值，當變數有變動時執行 function，藉此簡化相關 code
-  //  * @不需要放入的變數
-  //  * @params  state updating function: setFormIsValid...
-  //  * @params built-in APIs or function: fetch(), localStorage...
-  //  * @params variable/functions outside of components
-  //  *
-  //  * @清除函式
-  //  * @return ()=>{} 除了第一次 useEffect 執行以外，之後每次 useEffect 執行前，會先 return ()=>{} 函式
-  //  * 可以避免 useEffect 重複呼叫 API...等等
-  //  */
-  // useEffect(() => {
-  //   const identifier = setTimeout(() => {
-  //     setFormIsValid(
-  //       enteredEmail.includes('@') && enteredPassword.trim().length > 6
-  //     );
-  //   }, 500)
+  /**
+   * useEffect 第二變數放入偵測值，當變數有變動時執行 function，藉此簡化相關 code
+   * @不需要放入的變數
+   * @params  state updating function: setFormIsValid...
+   * @params built-in APIs or function: fetch(), localStorage...
+   * @params variable/functions outside of components
+   *
+   * @清除函式
+   * @return ()=>{} 除了第一次 useEffect 執行以外，之後每次 useEffect 執行前，會先 return ()=>{} 函式
+   * 可以避免 useEffect 重複呼叫 API...等等
+   */
+  useEffect(() => {
+    const identifier = setTimeout(() => {
+      console.log('change')
+      setFormIsValid(
+        emailState.isValid && passwordState.isValid
+      );
+    }, 500)
 
-  //   return () => { clearTimeout(identifier) }
+    return () => { clearTimeout(identifier) }
 
-  // }, [enteredEmail, enteredPassword])
+  }, [emailState.isValid, passwordState.isValid])
 
   const emailChangeHandler = (event) => {
     // 傳遞的參數可以是 Obj, String, Number
@@ -67,17 +87,16 @@ const Login = (props) => {
       value: event.target.value
     })
 
-    setFormIsValid(
-      emailState.isValid && enteredPassword.trim().length > 6
-    )
+    // setFormIsValid(emailState.isValid && passwordState.isValid)
   };
 
   const passwordChangeHandler = (event) => {
-    setEnteredPassword(event.target.value);
+    dispatchPassword({
+      type: 'USER_PASSWORD',
+      value: event.target.value,
+    })
 
-    setFormIsValid(
-      emailState.isValid && enteredPassword.trim().length > 6
-    )
+    // setFormIsValid(emailState.isValid && passwordState.isValid)
   };
 
   const validateEmailHandler = () => {
@@ -85,12 +104,12 @@ const Login = (props) => {
   };
 
   const validatePasswordHandler = () => {
-    setPasswordIsValid(enteredPassword.trim().length > 6);
+    dispatchPassword({ type: 'USER_CLEAR' })
   };
 
   const submitHandler = (event) => {
     event.preventDefault();
-    props.onLogin(emailState.value, enteredPassword);
+    props.onLogin(emailState.value, passwordState.value);
   };
 
   return (
@@ -109,13 +128,13 @@ const Login = (props) => {
           />
         </div>
         <div
-          className={`${classes.control} ${passwordIsValid === false ? classes.invalid : ''}`}
+          className={`${classes.control} ${passwordState.isValid === false ? classes.invalid : ''}`}
         >
           <label htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
-            value={enteredPassword}
+            value={passwordState.value}
             onChange={passwordChangeHandler}
             onBlur={validatePasswordHandler}
           />
