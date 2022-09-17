@@ -56,29 +56,34 @@ const Login = (props) => {
     value: '',
     isValid: false
   })
+  // 使用解構賦值來傳給 useEffect dependency
+  const { isValid: emailIsValid } = emailState
+  const { isValid: passwordIsValid } = passwordState
 
   /**
-   * useEffect 第二變數放入偵測值，當變數有變動時執行 function，藉此簡化相關 code
+   * useEffect 第二變數放 dependency，當值有變動時執行第一參數的 function，藉此簡化相關 code
    * @不需要放入的變數
-   * @params  state updating function: setFormIsValid...
+   * @params state updating function: setFormIsValid...
    * @params built-in APIs or function: fetch(), localStorage...
    * @params variable/functions outside of components
+   * @param dependency 若放 {}，裡面只要有任何 property 變動皆會觸發 func
    *
    * @清除函式
    * @return ()=>{} 除了第一次 useEffect 執行以外，之後每次 useEffect 執行前，會先 return ()=>{} 函式
    * 可以避免 useEffect 重複呼叫 API...等等
+   *
    */
   useEffect(() => {
     const identifier = setTimeout(() => {
       console.log('change')
       setFormIsValid(
-        emailState.isValid && passwordState.isValid
+        emailIsValid && passwordIsValid
       );
     }, 500)
 
     return () => { clearTimeout(identifier) }
 
-  }, [emailState.isValid, passwordState.isValid])
+  }, [emailIsValid, passwordIsValid])
 
   const emailChangeHandler = (event) => {
     // 傳遞的參數可以是 Obj, String, Number
