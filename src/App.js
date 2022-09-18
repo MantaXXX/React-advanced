@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Login from './components/Login/Login';
 import Home from './components/Home/Home';
 import MainHeader from './components/MainHeader/MainHeader';
+import AuthContext from './store/AuthContext';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,8 +22,6 @@ function App() {
   }, [])
 
   const loginHandler = (email, password) => {
-    // We should of course check email and password
-    // But it's just a dummy/ demo anyways
     localStorage.setItem('isLoggedIn', '1')
     setIsLoggedIn(true);
   };
@@ -31,15 +30,21 @@ function App() {
     localStorage.removeItem('isLoggedIn')
     setIsLoggedIn(false);
   };
-
+  /**
+   * <AuthContext> 並非 component，需用 .Provider 作為 component 才能用在 JSX 中
+   * <AuthContext.Provider> 內的 components 才能取得 context state
+   */
   return (
-    <React.Fragment>
-      <MainHeader isAuthenticated={isLoggedIn} onLogout={logoutHandler} />
+    <AuthContext.Provider
+      value={{
+        isLoggedIn: isLoggedIn
+      }}>
+      <MainHeader onLogout={logoutHandler} />
       <main>
         {!isLoggedIn && <Login onLogin={loginHandler} />}
         {isLoggedIn && <Home onLogout={logoutHandler} />}
       </main>
-    </React.Fragment>
+    </AuthContext.Provider>
   );
 }
 
