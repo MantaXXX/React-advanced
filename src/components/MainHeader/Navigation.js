@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import classes from './Navigation.module.css';
 import AuthContext from '../../store/AuthContext';
 
-const Navigation = (props) => {
+const Navigation = () => {
   // 使用 useContext 來接引用的 AuthContext，並將參數傳至 JSX 使用
   const ctx = useContext(AuthContext)
   /**
@@ -26,7 +26,7 @@ const Navigation = (props) => {
         )}
         {ctx.isLoggedIn && (
           <li>
-            <button onClick={props.onLogout}>Logout</button>
+            <button onClick={ctx.onLogout}>Logout</button>
           </li>
         )}
       </ul>
