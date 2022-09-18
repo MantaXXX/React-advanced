@@ -1,51 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 
 import Login from './components/Login/Login';
 import Home from './components/Home/Home';
 import MainHeader from './components/MainHeader/MainHeader';
-import AuthContext from './store/AuthContext';
+import AuthContext from './store/AuthContext'
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  /**
-   * useEffect 第二個參數 [] 為空時, 只在 component 第一次 rendered 時執行一次
-   * 藉此來查找 localStorage
-   */
-  useEffect(() => {
-    const storedUserLoginInfo = localStorage.getItem('isLoggedIn')
-
-    if (storedUserLoginInfo === '1') {
-      setIsLoggedIn(true)
-    }
-
-  }, [])
-
-  const loginHandler = (email, password) => {
-    localStorage.setItem('isLoggedIn', '1')
-    setIsLoggedIn(true);
-  };
-
-  const logoutHandler = () => {
-    localStorage.removeItem('isLoggedIn')
-    setIsLoggedIn(false);
-  };
+  // 取得 AuthContext 的 state
+  const ctx = useContext(AuthContext)
   /**
    * <AuthContext> 並非 component，需用 .Provider 作為 component 才能用在 JSX 中
    * <AuthContext.Provider> 內的 components 才能取得 context state
    */
   return (
-    <AuthContext.Provider
-      value={{
-        isLoggedIn: isLoggedIn,
-        onLogout: logoutHandler
-      }}>
+    <React.Fragment>
       <MainHeader />
       <main>
-        {!isLoggedIn && <Login onLogin={loginHandler} />}
-        {isLoggedIn && <Home onLogout={logoutHandler} />}
+        {!ctx.isLoggedIn && <Login />}
+        {ctx.isLoggedIn && <Home />}
       </main>
-    </AuthContext.Provider>
+    </React.Fragment>
   );
 }
 

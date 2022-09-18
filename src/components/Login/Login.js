@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect, useReducer, useContext } from 'react';
 
 import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
 import Button from '../UI/Button/Button';
+
+import AuthContext from '../../store/AuthContext'
 
 /**
  * @param preState 先前的 snapShot
@@ -34,8 +36,7 @@ const passwordReducer = (preState, action) => {
 }
 
 
-
-const Login = (props) => {
+const Login = () => {
   // const [enteredEmail, setEnteredEmail] = useState('');
   // const [emailIsValid, setEmailIsValid] = useState();
   // const [enteredPassword, setEnteredPassword] = useState('');
@@ -59,6 +60,7 @@ const Login = (props) => {
   // 使用解構賦值來傳給 useEffect dependency
   const { isValid: emailIsValid } = emailState
   const { isValid: passwordIsValid } = passwordState
+  const authCtx = useContext(AuthContext)
 
   /**
    * useEffect 第二變數放 dependency，當值有變動時執行第一參數的 function，藉此簡化相關 code
@@ -114,7 +116,7 @@ const Login = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    props.onLogin(emailState.value, passwordState.value);
+    authCtx.onLogin(emailState.value, passwordState.value);
   };
 
   return (
